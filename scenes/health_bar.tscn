@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://healthbar001"]
+
+[ext_resource type="Script" uid="uid://bclfdtw7se81" path="res://scripts/health_bar.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_background"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
+bg_color = Color(0.2, 0.8, 0.2, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_1"]
+viewport_path = NodePath("SubViewport")
+
+[node name="HealthBar" type="Node3D" unique_id=364593316]
+script = ExtResource("1_script")
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=693110412]
+transparent_bg = true
+size = Vector2i(240, 36)
+
+[node name="Background" type="Panel" parent="SubViewport" unique_id=957409606]
+offset_right = 240.0
+offset_bottom = 36.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_background")
+
+[node name="Fill" type="Panel" parent="SubViewport" unique_id=1767797767]
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 237.0
+offset_bottom = 33.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_fill")
+
+[node name="HPLabel" type="Label" parent="SubViewport" unique_id=1539182941]
+offset_right = 240.0
+offset_bottom = 36.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 28
+text = "100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=1493199331]
+no_depth_test = true
+pixel_size = 0.012
+texture = SubResource("ViewportTexture_1")

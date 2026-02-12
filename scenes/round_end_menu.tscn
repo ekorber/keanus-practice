@@ -1,0 +1,115 @@
+[gd_scene format=3 uid="uid://gsucbv30wme8"]
+
+[ext_resource type="Script" uid="uid://r3jvxms4w3nt" path="res://scripts/round_end_menu.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://dfkj3es1iw3ac" path="res://scripts/coin_icon.gd" id="2_coin_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.1, 0.1, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.3, 0.25, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.5, 0.4, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button_hover"]
+bg_color = Color(0.4, 0.35, 0.3, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.7, 0.5, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="RoundEndMenu" type="CanvasLayer" unique_id=2076968844]
+process_mode = 3
+script = ExtResource("1_script")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=551912419]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -140.0
+offset_right = 180.0
+offset_bottom = 140.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel" unique_id=1744963191]
+layout_mode = 2
+theme_override_constants/separation = 25
+alignment = 1
+
+[node name="Spacer2" type="Control" parent="Panel/VBoxContainer" unique_id=1169216794]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="ResultLabel" type="Label" parent="Panel/VBoxContainer" unique_id=1190109423]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.8, 0.2, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 42
+text = "GAME WON"
+horizontal_alignment = 1
+
+[node name="CoinsEarnedContainer" type="HBoxContainer" parent="Panel/VBoxContainer" unique_id=1959066531]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="CoinsEarnedLabel" type="Label" parent="Panel/VBoxContainer/CoinsEarnedContainer" unique_id=150904359]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "+0"
+
+[node name="CoinIcon" type="Control" parent="Panel/VBoxContainer/CoinsEarnedContainer" unique_id=1145013712]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+size_flags_vertical = 4
+script = ExtResource("2_coin_icon")
+
+[node name="PlayAgainButton" type="Button" parent="Panel/VBoxContainer" unique_id=859428103]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Play Again"
+
+[node name="MainMenuButton" type="Button" parent="Panel/VBoxContainer" unique_id=1596117977]
+custom_minimum_size = Vector2(160, 40)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_button_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_button_hover")
+text = "Main Menu"
+
+[node name="Spacer" type="Control" parent="Panel/VBoxContainer" unique_id=935064933]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2

@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://dxueensei2gon"]
+
+[ext_resource type="Script" uid="uid://vd8gtmoql3qt" path="res://scripts/knife.gd" id="1_script"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_bat_body"]
+radius = 0.08
+height = 0.9
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uhqni"]
+albedo_color = Color(0.30397218, 0.18379515, 0.09188794, 1)
+roughness = 0.85
+emission_enabled = true
+emission = Color(0.3, 0.18, 0.1, 1)
+emission_energy_multiplier = 0.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bat_wood"]
+albedo_color = Color(0.5419409, 0.34409136, 0.1966255, 1)
+roughness = 0.85
+emission_enabled = true
+emission = Color(0.3, 0.18, 0.1, 1)
+emission_energy_multiplier = 0.2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bat_handle"]
+top_radius = 0.045
+bottom_radius = 0.04
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bat_grip"]
+albedo_color = Color(0.2, 0.15, 0.1, 1)
+roughness = 0.7
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+size = Vector3(1.4, 1.2, 0.6)
+
+[node name="Bat" type="Node3D" unique_id=1828429396]
+script = ExtResource("1_script")
+weapon_damage = 20
+cooldown_multiplier = 2.0
+
+[node name="BatBody" type="MeshInstance3D" parent="." unique_id=215461716]
+transform = Transform3D(0.9, 0, 0, 0, -1.4141648, 3.934025e-08, 0, -6.181511e-08, -0.9, 0.0007226169, 0.14178637, 0)
+mesh = SubResource("CapsuleMesh_bat_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_uhqni")
+
+[node name="BatBody2" type="MeshInstance3D" parent="." unique_id=1160267622]
+transform = Transform3D(1.1802988, 0, 0, 0, -1.0017473, 4.7868422e-08, 0, -4.3787765e-08, -1.0951018, 0.0007226169, 0.33847713, 0)
+mesh = SubResource("CapsuleMesh_bat_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_bat_wood")
+
+[node name="BatBody3" type="MeshInstance3D" parent="." unique_id=1313481114]
+transform = Transform3D(1.1802988, 0, 0, 0, -0.14899051, 4.7868422e-08, 0, -6.512582e-09, -1.0951018, 0.0007226169, -0.4543944, 0)
+mesh = SubResource("CapsuleMesh_bat_body")
+surface_material_override/0 = SubResource("StandardMaterial3D_bat_wood")
+
+[node name="Handle" type="MeshInstance3D" parent="." unique_id=1306840006]
+transform = Transform3D(0.12, 0, 0, 0, 0.18, 0, 0, 0, 0.12, -0.02, -0.4, 0)
+mesh = SubResource("CylinderMesh_bat_handle")
+surface_material_override/0 = SubResource("StandardMaterial3D_bat_grip")
+
+[node name="Hitbox" type="Area3D" parent="." unique_id=633900015]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox" unique_id=1809944999]
+shape = SubResource("BoxShape3D_hitbox")
