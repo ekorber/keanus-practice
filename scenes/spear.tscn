@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://n40nm1db861e"]
+
+[ext_resource type="Script" uid="uid://bruf7xpkg51b0" path="res://scripts/spear.gd" id="1_script"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_shaft"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_shaft"]
+albedo_color = Color(0.55, 0.38, 0.22, 1)
+roughness = 0.7
+emission_enabled = true
+emission = Color(0.57862675, 0.3170775, 0.06421055, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="PrismMesh" id="PrismMesh_tip"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tip"]
+metallic = 0.9
+roughness = 0.2
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+size = Vector3(1.5, 1, 0.6)
+
+[node name="Spear" type="Node3D" unique_id=439213510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1848052, 0)
+script = ExtResource("1_script")
+
+[node name="Shaft" type="MeshInstance3D" parent="." unique_id=1188299625]
+transform = Transform3D(2.5312567, 0.00017668749, 0, -0.010823926, 0.04131971, 0, 0, 0, 0.06999999, -0.62183344, 0, 0)
+mesh = SubResource("CylinderMesh_shaft")
+surface_material_override/0 = SubResource("StandardMaterial3D_shaft")
+
+[node name="Tip" type="MeshInstance3D" parent="." unique_id=1705575895]
+transform = Transform3D(0.005353422, 0.29776782, 0, -0.14854474, 0.010731289, 0, 0, 0, 0.06999999, 0.7, 0, 0)
+mesh = SubResource("PrismMesh_tip")
+surface_material_override/0 = SubResource("StandardMaterial3D_tip")
+
+[node name="Hitbox" type="Area3D" parent="." unique_id=1232992652]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox" unique_id=1012477049]
+shape = SubResource("BoxShape3D_hitbox")

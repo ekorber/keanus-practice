@@ -52,8 +52,22 @@ func _show_weapon_selection() -> void:
 	if enemy:
 		enemy.set_random_weapon()
 
+	# Show utility selection
+	await _show_utility_selection(player)
+
 	# Start the countdown
 	_start_initial_countdown()
+
+
+func _show_utility_selection(player: Node) -> void:
+	var utility_select_scene: PackedScene = preload("res://scenes/utility_select.tscn")
+	var utility_select: CanvasLayer = utility_select_scene.instantiate()
+	get_tree().root.add_child(utility_select)
+
+	var chosen_utilities: Array = await utility_select.utilities_chosen
+
+	if player:
+		player.apply_utilities(chosen_utilities)
 
 
 func _start_initial_countdown() -> void:
@@ -142,6 +156,10 @@ func _trigger_round_end(player_won: bool) -> void:
 
 	# Wait 3 seconds
 	await get_tree().create_timer(3.0, false).timeout
+
+	# Clear utilities at end of game
+	if player:
+		player.clear_utilities()
 
 	# Calculate and award coins
 	var coins: int = player_score * 10
@@ -263,6 +281,9 @@ func restart_round() -> void:
 	# Set random weapon for enemy
 	if enemy:
 		enemy.set_random_weapon()
+
+	# Show utility selection
+	await _show_utility_selection(player)
 
 	# Run countdown then unfreeze
 	await _run_countdown()

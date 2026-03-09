@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dxueensei2gon"]
 
-[ext_resource type="Script" uid="uid://vd8gtmoql3qt" path="res://scripts/knife.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://vd8gtmoql3qt" path="res://scripts/weapon.gd" id="1_script"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_bat_body"]
 radius = 0.08
@@ -35,7 +35,7 @@ size = Vector3(1.4, 1.2, 0.6)
 [node name="Bat" type="Node3D" unique_id=1828429396]
 script = ExtResource("1_script")
 weapon_damage = 20
-cooldown_multiplier = 2.0
+cooldown_multiplier = 1.6
 
 [node name="BatBody" type="MeshInstance3D" parent="." unique_id=215461716]
 transform = Transform3D(0.9, 0, 0, 0, -1.4141648, 3.934025e-08, 0, -6.181511e-08, -0.9, 0.0007226169, 0.14178637, 0)
@@ -48,7 +48,7 @@ mesh = SubResource("CapsuleMesh_bat_body")
 surface_material_override/0 = SubResource("StandardMaterial3D_bat_wood")
 
 [node name="BatBody3" type="MeshInstance3D" parent="." unique_id=1313481114]
-transform = Transform3D(1.1802988, 0, 0, 0, -0.14899051, 4.7868422e-08, 0, -6.512582e-09, -1.0951018, 0.0007226169, -0.4543944, 0)
+transform = Transform3D(0.99290335, 0, 0, 0, -0.10811244, 4.4006974e-08, 0, -4.7257447e-09, -1.0067621, 0.0007226169, -0.45875582, 0)
 mesh = SubResource("CapsuleMesh_bat_body")
 surface_material_override/0 = SubResource("StandardMaterial3D_bat_wood")
 

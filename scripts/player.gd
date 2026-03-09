@@ -19,6 +19,17 @@ var current_hp: int = MAX_HP
 var health_bar: Node3D = null
 var weapon: Node3D = null
 var selected_weapon_id: String = "knife"
+var base_speed: float = 8.0
+var base_jump_velocity: float = 10.0
+var active_utilities: Array = []
+var is_dashing: bool = false
+var dash_timer: float = 0.0
+var dash_direction: float = 1.0
+const DASH_DISTANCE: float = 2.1
+const DASH_DURATION: float = 0.05
+const DASH_COOLDOWN: float = 3.0
+var dash_cooldown_timer: float = 0.0
+var facing_direction: float = 1.0
 
 
 func _ready() -> void:
@@ -61,6 +72,8 @@ func _get_weapon_scene_path(weapon_id: String) -> String:
 			return "res://scenes/bat.tscn"
 		"sword":
 			return "res://scenes/sword.tscn"
+		"spear":
+			return "res://scenes/spear.tscn"
 		_:
 			return "res://scenes/knife.tscn"
 
@@ -73,12 +86,41 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * gravity_multiplier * delta
 
+	# Handle dash cooldown
+	if dash_cooldown_timer > 0:
+		dash_cooldown_timer -= delta
+
+	# Handle dash
+	if is_dashing:
+		dash_timer -= delta
+		var dash_speed: float = DASH_DISTANCE / DASH_DURATION
+		if "speed_boost" in active_utilities:
+			dash_speed *= 1.5
+		velocity.x = dash_direction * dash_speed
+		velocity.z = 0
+		position.z = 0
+		if dash_timer <= 0:
+			is_dashing = false
+		move_and_slide()
+		return
+
 	# Handle jump
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_velocity
 
 	# Get horizontal input for 2.5D
 	var input_dir := Input.get_axis("walk_left", "walk_right")
+
+	# Track facing direction
+	if input_dir != 0:
+		facing_direction = input_dir
+
+	# Start dash
+	if Input.is_action_just_pressed("dash") and dash_cooldown_timer <= 0:
+		is_dashing = true
+		dash_timer = DASH_DURATION
+		dash_cooldown_timer = DASH_COOLDOWN
+		dash_direction = input_dir if input_dir != 0 else facing_direction
 
 	# Set X velocity based on input (2.5D movement - only X axis)
 	velocity.x = input_dir * speed
@@ -157,6 +199,23 @@ func reset_to_spawn() -> void:
 	current_hp = MAX_HP
 	if health_bar:
 		health_bar.reset()
+
+
+func apply_utilities(utilities: Array) -> void:
+	active_utilities = utilities
+	speed = base_speed
+	jump_velocity = base_jump_velocity
+
+	if "speed_boost" in utilities:
+		speed = base_speed * 1.5
+	if "jump_boost" in utilities:
+		jump_velocity = base_jump_velocity * 1.5
+
+
+func clear_utilities() -> void:
+	active_utilities = []
+	speed = base_speed
+	jump_velocity = base_jump_velocity
 
 
 func unfreeze() -> void:

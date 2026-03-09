@@ -1,11 +1,10 @@
 [gd_scene format=3 uid="uid://72iksor6ahn4"]
 
-[ext_resource type="Script" uid="uid://vd8gtmoql3qt" path="res://scripts/knife.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://vd8gtmoql3qt" path="res://scripts/weapon.gd" id="1_script"]
 
 [sub_resource type="PrismMesh" id="PrismMesh_ufhdc"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blade"]
-albedo_color = Color(0.72464263, 0.7246426, 0.7246426, 1)
 metallic = 0.9
 roughness = 0.15
 emission_enabled = true
@@ -17,14 +16,14 @@ emission_energy_multiplier = 0.5
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_handle"]
 albedo_color = Color(0.48679954, 0.29858407, 0.19883749, 1)
 roughness = 0.8
-emission_enabled = true
-emission = Color(0.3429256, 0.1754309, 0.093834825, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.2, 1, 0.6)
 
 [node name="Knife" type="Node3D" unique_id=978261933]
 script = ExtResource("1_script")
+weapon_damage = 15
+cooldown_multiplier = 1.2
 
 [node name="Blade" type="MeshInstance3D" parent="." unique_id=955571456]
 transform = Transform3D(0.2373287, -0.12771256, 0, 0.035456307, 0.8548508, 0, 0, 0, 0.03145663, -0.013007307, 0.14310943, 0)

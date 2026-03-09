@@ -3,9 +3,10 @@ extends CanvasLayer
 signal weapon_selected(weapon_id: String)
 
 const WEAPONS: Dictionary = {
-	"knife": {"name": "Knife", "damage": 10, "speed": "Fast", "scene": "res://scenes/knife.tscn"},
-	"bat": {"name": "Bat", "damage": 20, "speed": "Medium", "scene": "res://scenes/bat.tscn"},
-	"sword": {"name": "Sword", "damage": 30, "speed": "Slow", "scene": "res://scenes/sword.tscn"}
+	"knife": {"name": "Knife", "damage": 15, "scene": "res://scenes/knife.tscn"},
+	"bat": {"name": "Bat", "damage": 20, "scene": "res://scenes/bat.tscn"},
+	"sword": {"name": "Sword", "damage": 30, "scene": "res://scenes/sword.tscn"},
+	"spear": {"name": "Spear", "damage": 10, "scene": "res://scenes/spear.tscn"}
 }
 
 @onready var weapons_container: HBoxContainer = $Panel/VBoxContainer/WeaponsContainer
@@ -81,17 +82,6 @@ func _create_weapon_buttons() -> void:
 			damage_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4, 1))
 		vbox.add_child(damage_label)
 
-		var speed_label: Label = Label.new()
-		speed_label.text = weapon["speed"]
-		speed_label.add_theme_font_size_override("font_size", 14)
-		speed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		speed_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		if is_owned:
-			speed_label.add_theme_color_override("font_color", Color(0.6, 0.8, 0.9, 1))
-		else:
-			speed_label.add_theme_color_override("font_color", Color(0.4, 0.4, 0.4, 1))
-		vbox.add_child(speed_label)
-
 		if not is_owned:
 			var locked_label: Label = Label.new()
 			locked_label.text = "LOCKED"
@@ -101,6 +91,7 @@ func _create_weapon_buttons() -> void:
 			locked_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			vbox.add_child(locked_label)
 
+		vbox.set_anchors_preset(Control.PRESET_FULL_RECT)
 		button.add_child(vbox)
 		weapons_container.add_child(button)
 

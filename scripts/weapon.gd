@@ -132,21 +132,21 @@ func attack() -> void:
 	var stab_angle: float = -attack_direction * PI / 2.0  # 90 degrees toward attack direction
 
 	# Rotate down and lunge forward
-	tween.tween_property(self, "rotation:z", stab_angle, 0.08 * cooldown_multiplier)
-	tween.parallel().tween_property(self, "lunge_offset", 0.5, 0.08 * cooldown_multiplier)
+	tween.tween_property(self, "rotation:z", stab_angle, 0.04 * cooldown_multiplier)
+	tween.parallel().tween_property(self, "lunge_offset", 0.5, 0.04 * cooldown_multiplier)
 
 	# Hold position
-	tween.tween_interval(0.15 * cooldown_multiplier)
+	tween.tween_interval(0.075 * cooldown_multiplier)
 
 	# Rotate back up and return
-	tween.tween_property(self, "rotation:z", 0.0, 0.12 * cooldown_multiplier)
-	tween.parallel().tween_property(self, "lunge_offset", 0.0, 0.12 * cooldown_multiplier)
+	tween.tween_property(self, "rotation:z", 0.0, 0.06 * cooldown_multiplier)
+	tween.parallel().tween_property(self, "lunge_offset", 0.0, 0.06 * cooldown_multiplier)
 
 	# Deactivate hitbox after animation
 	tween.tween_callback(func(): hitbox_active = false)
 
 	# Cooldown
-	tween.tween_interval(0.15 * cooldown_multiplier)
+	tween.tween_interval(0.075 * cooldown_multiplier)
 
 	tween.tween_callback(func(): is_attacking = false)
 
