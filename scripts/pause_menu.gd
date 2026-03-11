@@ -16,6 +16,8 @@ func toggle_pause() -> void:
 	if visible:
 		resume()
 	else:
+		if get_tree().get_first_node_in_group("selection_menu"):
+			return
 		var scoreboard = get_tree().get_first_node_in_group("scoreboard")
 		if scoreboard and scoreboard.round_over:
 			return

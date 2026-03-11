@@ -8,12 +8,46 @@ var is_resetting: bool = false
 var round_over: bool = false
 var player_won_last_round: bool = false
 var player_weapon_id: String = "knife"
+var is_in_countdown: bool = false
+var is_between_rounds: bool = false
 
 @onready var player_score_label: Label = $HBoxContainer/PlayerPanel/PlayerScore
 @onready var ai_score_label: Label = $HBoxContainer/AIPanel/AIScore
 @onready var countdown_label: Label = $CountdownLabel
 @onready var result_label: Label = $ResultLabel
 @onready var round_result_label: Label = $RoundResultLabel
+@onready var switch_hint_label: Label = $SwitchHintLabel
+
+
+func _process(_delta: float) -> void:
+	if Input.is_action_just_pressed("reselect_weapon") and is_between_rounds:
+		if not get_tree().get_first_node_in_group("selection_menu"):
+			_open_weapon_reselect()
+
+
+func _open_weapon_reselect() -> void:
+	var player: Node = get_tree().get_first_node_in_group("player")
+
+	# Weapon select
+	var weapon_select: CanvasLayer = preload("res://scenes/weapon_select.tscn").instantiate()
+	get_tree().root.add_child(weapon_select)
+	var selected_weapon: String = await weapon_select.weapon_selected
+	player_weapon_id = selected_weapon
+	if player:
+		player.set_weapon(selected_weapon)
+
+	# Utility select — only show utilities not already active
+	var utility_select: CanvasLayer = preload("res://scenes/utility_select.tscn").instantiate()
+	if player:
+		utility_select.excluded_utilities = player.active_utilities.duplicate()
+	get_tree().root.add_child(utility_select)
+	var new_utilities: Array = await utility_select.utilities_chosen
+
+	# Merge new picks with already-active utilities
+	if player and new_utilities.size() > 0:
+		var merged: Array = player.active_utilities.duplicate()
+		merged.append_array(new_utilities)
+		player.apply_utilities(merged)
 
 
 func _ready() -> void:
@@ -60,8 +94,9 @@ func _show_weapon_selection() -> void:
 
 
 func _show_utility_selection(player: Node) -> void:
-	var utility_select_scene: PackedScene = preload("res://scenes/utility_select.tscn")
-	var utility_select: CanvasLayer = utility_select_scene.instantiate()
+	var utility_select: CanvasLayer = preload("res://scenes/utility_select.tscn").instantiate()
+	if player:
+		utility_select.excluded_utilities = player.active_utilities.duplicate()
 	get_tree().root.add_child(utility_select)
 
 	var chosen_utilities: Array = await utility_select.utilities_chosen
@@ -201,6 +236,9 @@ func start_round_reset() -> void:
 		round_result_label.add_theme_color_override("font_color", Color(0.9, 0.2, 0.2))
 	round_result_label.visible = true
 
+	# M is available during the 3-second result display
+	is_between_rounds = true
+
 	# Wait 3 seconds before resetting (survivor can still move)
 	await get_tree().create_timer(3.0, false).timeout
 
@@ -208,6 +246,7 @@ func start_round_reset() -> void:
 	round_result_label.visible = false
 
 	if round_over:
+		is_between_rounds = false
 		is_resetting = false
 		return
 
@@ -221,8 +260,10 @@ func start_round_reset() -> void:
 	if enemy:
 		enemy.reset_to_spawn()
 
-	# Start countdown
+	# M still works during countdown (hint is shown); closes when round starts
 	await _run_countdown()
+
+	is_between_rounds = false
 
 	# Unfreeze both
 	if player:
@@ -234,13 +275,17 @@ func start_round_reset() -> void:
 
 
 func _run_countdown() -> void:
+	is_in_countdown = true
 	countdown_label.visible = true
+	switch_hint_label.visible = true
 
 	for i in range(3, 0, -1):
 		countdown_label.text = str(i)
 		await get_tree().create_timer(1.0, false).timeout
 
+	is_in_countdown = false
 	countdown_label.visible = false
+	switch_hint_label.visible = false
 
 
 func reset_scores() -> void:

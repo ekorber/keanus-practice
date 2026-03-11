@@ -187,28 +187,8 @@ func _check_charge_hits() -> void:
 
 
 func _calculate_charge_damage(spd: float) -> int:
-	# Instant kill at extreme speeds
-	if spd > 80.0:
-		return 100
-
-	# Piecewise linear mapping:
-	# Standing still / slow: 15 damage
-	# Walk (8): 20 damage
-	# Speed boost walk (12): 30 damage
-	# Dash (42): 40 damage
-	# Speed boost + dash (63): 50 damage
-	if spd <= 1.0:
-		return 15
-	elif spd <= 8.0:
-		return int(lerpf(15.0, 20.0, spd / 8.0))
-	elif spd <= 12.0:
-		return int(lerpf(20.0, 30.0, (spd - 8.0) / 4.0))
-	elif spd <= 42.0:
-		return int(lerpf(30.0, 40.0, (spd - 12.0) / 30.0))
-	elif spd <= 63.0:
-		return int(lerpf(40.0, 50.0, (spd - 42.0) / 21.0))
-	else:
-		return int(lerpf(50.0, 100.0, (spd - 63.0) / 37.0))
+	# 20 damage at normal walk speed (8.0), scales linearly, min 10, max 100
+	return clamp(int(spd * 2.5), 10, 100)
 
 
 func _add_kill() -> void:

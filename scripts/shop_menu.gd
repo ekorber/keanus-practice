@@ -3,16 +3,18 @@ extends Control
 const WEAPONS: Dictionary = {
 	"bat": {"name": "Bat", "cost": 500, "description": "A sturdy wooden bat"},
 	"sword": {"name": "Sword", "cost": 1000, "description": "A sharp metal sword"},
-	"spear": {"name": "Spear", "cost": 2500, "description": "Hold RMB to charge - faster = more damage"}
+	"spear": {"name": "Spear", "cost": 2500, "description": "Hold RMB to charge - faster = more damage"},
+	"mace": {"name": "Mace", "cost": 5000, "description": "LMB while falling - faster fall = more damage"}
 }
 
 const UTILITIES: Dictionary = {
 	"speed_boost": {"name": "Speed Boost", "cost": 100, "description": "1.5x movement speed for one game", "color": Color(0.3, 0.5, 0.9, 1)},
-	"jump_boost": {"name": "Jump Boost", "cost": 100, "description": "1.5x jump height for one game", "color": Color(0.9, 0.9, 0.95, 1)}
+	"jump_boost": {"name": "Jump Boost", "cost": 100, "description": "1.5x jump height for one game", "color": Color(0.9, 0.9, 0.95, 1)},
+	"health_boost": {"name": "Health Boost", "cost": 100, "description": "+50 max health for one game", "color": Color(0.9, 0.15, 0.15, 1)}
 }
 
 @onready var coin_label: Label = $CoinDisplay/CoinLabel
-@onready var items_container: VBoxContainer = $ItemsContainer
+@onready var items_container: VBoxContainer = $ScrollContainer/ItemsContainer
 
 var item_buttons: Dictionary = {}
 

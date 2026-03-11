@@ -65,6 +65,10 @@ func set_weapon(weapon_id: String) -> void:
 	weapon.name = "Weapon"
 	add_child(weapon)
 
+	# Sync hitbox visuals with current debug toggle state
+	if HitboxDebug.hitboxes_visible:
+		get_tree().call_group("hitbox_debug", "set_visible", true)
+
 
 func _get_weapon_scene_path(weapon_id: String) -> String:
 	match weapon_id:
@@ -74,6 +78,8 @@ func _get_weapon_scene_path(weapon_id: String) -> String:
 			return "res://scenes/sword.tscn"
 		"spear":
 			return "res://scenes/spear.tscn"
+		"mace":
+			return "res://scenes/mace.tscn"
 		_:
 			return "res://scenes/knife.tscn"
 
@@ -196,9 +202,15 @@ func reset_to_spawn() -> void:
 	$CollisionShape3D.set_deferred("disabled", false)
 
 	# Reset HP
-	current_hp = MAX_HP
-	if health_bar:
-		health_bar.reset()
+	if "health_boost" in active_utilities:
+		current_hp = MAX_HP + 50
+		if health_bar:
+			health_bar.max_hp = MAX_HP + 50
+			health_bar.set_hp(current_hp)
+	else:
+		current_hp = MAX_HP
+		if health_bar:
+			health_bar.reset()
 
 
 func apply_utilities(utilities: Array) -> void:
@@ -210,12 +222,19 @@ func apply_utilities(utilities: Array) -> void:
 		speed = base_speed * 1.5
 	if "jump_boost" in utilities:
 		jump_velocity = base_jump_velocity * 1.5
+	if "health_boost" in utilities:
+		current_hp = MAX_HP + 50
+		if health_bar:
+			health_bar.max_hp = MAX_HP + 50
+			health_bar.set_hp(current_hp)
 
 
 func clear_utilities() -> void:
 	active_utilities = []
 	speed = base_speed
 	jump_velocity = base_jump_velocity
+	if health_bar:
+		health_bar.max_hp = MAX_HP
 
 
 func unfreeze() -> void:

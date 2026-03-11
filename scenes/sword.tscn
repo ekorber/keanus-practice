@@ -34,6 +34,13 @@ emission = Color(0.3144286, 0.20130754, 0.11092671, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
 size = Vector3(1.6, 1.5, 0.6)
 
+[sub_resource type="BoxMesh" id="BoxMesh_hitbox_visual"]
+size = Vector3(1.6, 1.5, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hitbox_visual"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.3)
+
 [node name="Sword" type="Node3D" unique_id=1697280566]
 transform = Transform3D(1.1069585, 0, 0, 0, 1.1705506, 0, 0, 0, 1.1000872, 0, 0.3350017, 0)
 script = ExtResource("1_script")
@@ -61,3 +68,8 @@ collision_mask = 4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox" unique_id=2006539681]
 shape = SubResource("BoxShape3D_hitbox")
+
+[node name="HitboxVisual" type="MeshInstance3D" parent="Hitbox" groups=["hitbox_debug"]]
+visible = false
+mesh = SubResource("BoxMesh_hitbox_visual")
+surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")

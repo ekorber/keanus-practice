@@ -6,13 +6,15 @@ const WEAPONS: Dictionary = {
 	"knife": {"name": "Knife", "damage": 15, "scene": "res://scenes/knife.tscn"},
 	"bat": {"name": "Bat", "damage": 20, "scene": "res://scenes/bat.tscn"},
 	"sword": {"name": "Sword", "damage": 30, "scene": "res://scenes/sword.tscn"},
-	"spear": {"name": "Spear", "damage": 10, "scene": "res://scenes/spear.tscn"}
+	"spear": {"name": "Spear", "damage": 10, "damage_label": "Base Damage: 10", "scene": "res://scenes/spear.tscn"},
+	"mace": {"name": "Mace", "damage": 10, "damage_label": "Base Damage: 10", "scene": "res://scenes/mace.tscn"}
 }
 
-@onready var weapons_container: HBoxContainer = $Panel/VBoxContainer/WeaponsContainer
+@onready var weapons_container: GridContainer = $Panel/VBoxContainer/WeaponsContainer
 
 
 func _ready() -> void:
+	add_to_group("selection_menu")
 	_create_weapon_buttons()
 
 
@@ -72,7 +74,7 @@ func _create_weapon_buttons() -> void:
 		vbox.add_child(name_label)
 
 		var damage_label: Label = Label.new()
-		damage_label.text = "DMG: " + str(weapon["damage"])
+		damage_label.text = weapon.get("damage_label", "DMG: " + str(weapon["damage"]))
 		damage_label.add_theme_font_size_override("font_size", 14)
 		damage_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		damage_label.mouse_filter = Control.MOUSE_FILTER_IGNORE

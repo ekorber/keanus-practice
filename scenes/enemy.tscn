@@ -9,6 +9,13 @@ albedo_color = Color(0.8, 0.2, 0.2, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_enemy"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_hitbox_visual"]
+size = Vector3(1.2, 2.2, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hitbox_visual"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.3)
+
 [node name="Enemy" type="CharacterBody3D" unique_id=835864644]
 collision_layer = 5
 script = ExtResource("1_script")
@@ -19,6 +26,11 @@ surface_material_override/0 = SubResource("StandardMaterial3D_enemy")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=52746379]
 shape = SubResource("CapsuleShape3D_enemy")
+
+[node name="HitboxVisual" type="MeshInstance3D" parent="." groups=["hitbox_debug"]]
+visible = false
+mesh = SubResource("BoxMesh_hitbox_visual")
+surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
 
 [node name="RayUp" type="RayCast3D" parent="." unique_id=885700408]
 target_position = Vector3(0, 3, 0)

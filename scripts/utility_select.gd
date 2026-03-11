@@ -4,17 +4,20 @@ signal utilities_chosen(active_utilities: Array)
 
 const UTILITIES: Dictionary = {
 	"speed_boost": {"name": "Speed Boost", "description": "1.5x Speed", "color": Color(0.3, 0.5, 0.9, 1)},
-	"jump_boost": {"name": "Jump Boost", "description": "1.5x Jump", "color": Color(0.9, 0.9, 0.95, 1)}
+	"jump_boost": {"name": "Jump Boost", "description": "1.5x Jump", "color": Color(0.9, 0.9, 0.95, 1)},
+	"health_boost": {"name": "Health Boost", "description": "+50 HP", "color": Color(0.9, 0.15, 0.15, 1)}
 }
 
 var selected_utilities: Array = []
 var utility_buttons: Dictionary = {}
+var excluded_utilities: Array = []
 
-@onready var utilities_container: HBoxContainer = $Panel/VBoxContainer/UtilitiesContainer
+@onready var utilities_container: GridContainer = $Panel/VBoxContainer/UtilitiesContainer
 @onready var ready_button: Button = $Panel/VBoxContainer/ReadyButton
 
 
 func _ready() -> void:
+	add_to_group("selection_menu")
 	_create_utility_buttons()
 	ready_button.pressed.connect(_on_ready_pressed)
 
@@ -43,6 +46,8 @@ func _create_utility_buttons() -> void:
 	var has_any: bool = false
 
 	for utility_id in UTILITIES:
+		if utility_id in excluded_utilities:
+			continue
 		var count: int = SaveData.get_utility_count(utility_id)
 		if count <= 0:
 			continue

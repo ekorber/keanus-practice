@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3xqk8m7np1at"]
+[gd_scene load_steps=7 format=3 uid="uid://c3xqk8m7np1at"]
 
 [ext_resource type="Script" uid="uid://csmr7gwejkie5" path="res://scripts/player.gd" id="1_script"]
 
@@ -8,6 +8,13 @@
 albedo_color = Color(0.2, 0.6, 0.9, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_hitbox_visual"]
+size = Vector3(1.2, 2.2, 1.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hitbox_visual"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.3)
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 5
@@ -20,3 +27,8 @@ surface_material_override/0 = SubResource("StandardMaterial3D_player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_player")
+
+[node name="HitboxVisual" type="MeshInstance3D" parent="." groups=["hitbox_debug"]]
+visible = false
+mesh = SubResource("BoxMesh_hitbox_visual")
+surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
