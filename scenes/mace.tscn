@@ -1,6 +1,12 @@
-[gd_scene load_steps=10 format=3 uid="uid://cmace1wpn0001"]
+[gd_scene load_steps=16 format=3 uid="uid://cmace1wpn0001"]
 
 [ext_resource type="Script" uid="uid://duo4hwkfmot6n" path="res://scripts/mace.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://jgbx31w7s5no" path="res://sounds/impactMining_000.ogg" id="2_8xrde"]
+[ext_resource type="AudioStream" uid="uid://d2pqedglq2kx2" path="res://sounds/universfield-swoosh-06-351021.mp3" id="2_cvhaa"]
+[ext_resource type="AudioStream" uid="uid://bchjjm240s6n8" path="res://sounds/impactMining_001.ogg" id="3_xlkur"]
+[ext_resource type="AudioStream" uid="uid://d1wl36s1juhec" path="res://sounds/impactMining_002.ogg" id="4_cvhaa"]
+[ext_resource type="AudioStream" uid="uid://bdqklokw72t2c" path="res://sounds/impactMining_003.ogg" id="5_os7sw"]
+[ext_resource type="AudioStream" uid="uid://ci1jmhwkop3vs" path="res://sounds/impactMining_004.ogg" id="6_ep6gr"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_handle"]
 
@@ -63,3 +69,26 @@ shape = SubResource("BoxShape3D_hitbox")
 visible = false
 mesh = SubResource("BoxMesh_hitbox_visual")
 surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
+
+[node name="SwingSound" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_cvhaa")
+
+[node name="HitSound1" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_8xrde")
+volume_db = 15.0
+
+[node name="HitSound2" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_xlkur")
+volume_db = 15.0
+
+[node name="HitSound3" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_cvhaa")
+volume_db = 15.0
+
+[node name="HitSound4" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("5_os7sw")
+volume_db = 15.0
+
+[node name="HitSound5" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("6_ep6gr")
+volume_db = 15.0

@@ -84,7 +84,7 @@ func _show_weapon_selection() -> void:
 
 	# Set random weapon for enemy
 	if enemy:
-		enemy.set_random_weapon()
+		enemy.set_weapon_to_match(player_weapon_id)
 
 	# Show utility selection
 	await _show_utility_selection(player)
@@ -115,8 +115,8 @@ func _start_initial_countdown() -> void:
 	if enemy:
 		enemy.is_frozen = true
 
-	# Run countdown
-	await _run_countdown()
+	# Run countdown without switch hint (player just selected their weapon)
+	await _run_countdown(false)
 
 	# Unfreeze both
 	if player:
@@ -254,11 +254,16 @@ func start_round_reset() -> void:
 	var player: Node = get_tree().get_first_node_in_group("player")
 	var enemy: Node = get_tree().get_first_node_in_group("enemy")
 
+	# Reset player rampage before spawn
+	if player and player.has_method("reset_rampage"):
+		player.reset_rampage()
+
 	# Reset both to spawn positions and freeze them
 	if player:
 		player.reset_to_spawn()
 	if enemy:
 		enemy.reset_to_spawn()
+		enemy.set_weapon_to_match(player_weapon_id)
 
 	# M still works during countdown (hint is shown); closes when round starts
 	await _run_countdown()
@@ -274,10 +279,10 @@ func start_round_reset() -> void:
 	is_resetting = false
 
 
-func _run_countdown() -> void:
+func _run_countdown(show_switch_hint: bool = true) -> void:
 	is_in_countdown = true
 	countdown_label.visible = true
-	switch_hint_label.visible = true
+	switch_hint_label.visible = show_switch_hint
 
 	for i in range(3, 0, -1):
 		countdown_label.text = str(i)
@@ -307,8 +312,10 @@ func restart_round() -> void:
 
 	if player:
 		player.reset_to_spawn()
+		player.reset_rampage_charge()
 	if enemy:
 		enemy.reset_to_spawn()
+		enemy.reset_rampage_charge()
 
 	# Show weapon selection again
 	var weapon_select_scene: PackedScene = preload("res://scenes/weapon_select.tscn")
@@ -325,7 +332,7 @@ func restart_round() -> void:
 
 	# Set random weapon for enemy
 	if enemy:
-		enemy.set_random_weapon()
+		enemy.set_weapon_to_match(player_weapon_id)
 
 	# Show utility selection
 	await _show_utility_selection(player)

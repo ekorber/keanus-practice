@@ -1,6 +1,9 @@
-[gd_scene format=3 uid="uid://cd3c5p66yrpeg"]
+[gd_scene load_steps=14 format=3 uid="uid://cd3c5p66yrpeg"]
 
 [ext_resource type="Script" uid="uid://vd8gtmoql3qt" path="res://scripts/weapon.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://b21pva6wmxnsn" path="res://sounds/jofae-swing-whoosh-110410.mp3" id="2_k5whp"]
+[ext_resource type="AudioStream" uid="uid://biwuqm3v6hnvi" path="res://sounds/gargamel10-sword-slashing-game-sound-effect-2-379229.mp3" id="2_n355p"]
+[ext_resource type="AudioStream" uid="uid://bi72q6u6akhmk" path="res://sounds/dragon-studio-sword-slice-393847.mp3" id="2_s4ec8"]
 
 [sub_resource type="PrismMesh" id="PrismMesh_blade"]
 
@@ -41,35 +44,46 @@ size = Vector3(1.6, 1.5, 0.6)
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.3)
 
-[node name="Sword" type="Node3D" unique_id=1697280566]
+[node name="Sword" type="Node3D"]
 transform = Transform3D(1.1069585, 0, 0, 0, 1.1705506, 0, 0, 0, 1.1000872, 0, 0.3350017, 0)
 script = ExtResource("1_script")
-weapon_damage = 30
+weapon_damage = 25
 cooldown_multiplier = 2.4
 
-[node name="Blade" type="MeshInstance3D" parent="." unique_id=1739856862]
+[node name="Blade" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.15004382, -0.016694872, 0, 0.00088541844, 1.2947154, 0, 0, 0, 0.04, -0.02379889, 0.3453417, 0)
 mesh = SubResource("PrismMesh_blade")
 surface_material_override/0 = SubResource("StandardMaterial3D_blade")
 
-[node name="Guard" type="MeshInstance3D" parent="." unique_id=476951078]
+[node name="Guard" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02, -0.32, 0)
 mesh = SubResource("BoxMesh_guard")
 surface_material_override/0 = SubResource("StandardMaterial3D_guard")
 
-[node name="Handle" type="MeshInstance3D" parent="." unique_id=114609337]
+[node name="Handle" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.07605315, 0, 0, 0, 0.17210169, 0, 0, 0, 0.07605314, -0.02, -0.49525473, 0)
 mesh = SubResource("CylinderMesh_handle")
 surface_material_override/0 = SubResource("StandardMaterial3D_handle")
 
-[node name="Hitbox" type="Area3D" parent="." unique_id=434399215]
+[node name="Hitbox" type="Area3D" parent="."]
 collision_layer = 0
 collision_mask = 4
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox" unique_id=2006539681]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
 shape = SubResource("BoxShape3D_hitbox")
 
 [node name="HitboxVisual" type="MeshInstance3D" parent="Hitbox" groups=["hitbox_debug"]]
 visible = false
 mesh = SubResource("BoxMesh_hitbox_visual")
 surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
+
+[node name="SwingSound" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_k5whp")
+
+[node name="HitSound" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_s4ec8")
+
+[node name="ParryActivateSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="ParryDeflectSound" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("2_n355p")

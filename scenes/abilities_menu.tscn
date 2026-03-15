@@ -1,0 +1,187 @@
+[gd_scene format=3 uid="uid://abilities_menu"]
+
+[ext_resource type="Script" path="res://scripts/abilities_menu.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.1, 0.1, 0.12, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_weapon_panel"]
+bg_color = Color(0.15, 0.15, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.4, 0.6, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_bar"]
+bg_color = Color(0.12, 0.12, 0.18, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.5, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_slot"]
+bg_color = Color(0.18, 0.18, 0.25, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.35, 0.55, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_button"]
+bg_color = Color(0.3, 0.25, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.5, 0.4, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="AbilitiesMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.1, 0.12, 1)
+
+[node name="BackButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 15.0
+offset_top = 15.0
+offset_right = 115.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_back_button")
+text = "Back"
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 30.0
+offset_right = 200.0
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 36
+text = "Weapon"
+horizontal_alignment = 1
+
+[node name="WeaponDisplay" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -120.0
+offset_right = 220.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_weapon_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="WeaponDisplay"]
+layout_mode = 2
+theme_override_constants/margin_left = 30
+theme_override_constants/margin_right = 30
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="WeaponDisplay/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="NameLabel" type="Label" parent="WeaponDisplay/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.8, 1)
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+
+[node name="DescLabel" type="Label" parent="WeaponDisplay/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="StatusLabel" type="Label" parent="WeaponDisplay/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.55, 0.65, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "No Ability"
+
+[node name="AbilityBar" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -110.0
+offset_right = 300.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_ability_bar")
+
+[node name="MarginContainer" type="MarginContainer" parent="AbilityBar"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="AbilityBar/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BarLabel" type="Label" parent="AbilityBar/MarginContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "Abilities"
+horizontal_alignment = 1
+
+[node name="SlotsContainer" type="HBoxContainer" parent="AbilityBar/MarginContainer/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+theme_override_constants/separation = 12
+

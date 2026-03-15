@@ -45,7 +45,7 @@ func _create_shop_items() -> void:
 
 	# Utilities category
 	var utilities_label: Label = Label.new()
-	utilities_label.text = "— Utilities —"
+	utilities_label.text = "— Boosts —"
 	utilities_label.add_theme_font_size_override("font_size", 20)
 	utilities_label.add_theme_color_override("font_color", Color(0.5, 0.8, 1, 1))
 	utilities_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -126,11 +126,11 @@ func _create_weapon_panel(weapon_id: String, weapon: Dictionary) -> PanelContain
 	button_style.border_width_bottom = 2
 
 	if is_owned:
-		button.text = "OWNED"
-		button.disabled = true
-		button_style.bg_color = Color(0.2, 0.4, 0.2, 1)
-		button_style.border_color = Color(0.3, 0.6, 0.3, 1)
-		button.add_theme_color_override("font_disabled_color", Color(0.5, 0.8, 0.5, 1))
+		button.text = "Abilities"
+		button_style.bg_color = Color(0.2, 0.2, 0.4, 1)
+		button_style.border_color = Color(0.4, 0.4, 0.7, 1)
+		button.add_theme_color_override("font_color", Color(0.7, 0.8, 1, 1))
+		button.pressed.connect(_on_abilities_pressed.bind(weapon_id))
 	else:
 		button.text = str(weapon["cost"]) + " C"
 		if can_afford:
@@ -296,12 +296,12 @@ func _on_buy_utility_pressed(utility_id: String, count_label: Label) -> void:
 
 func _refresh_weapon_item(weapon_id: String) -> void:
 	var button: Button = item_buttons[weapon_id]
-	button.text = "OWNED"
-	button.disabled = true
+	button.text = "Abilities"
+	button.disabled = false
 
 	var style: StyleBoxFlat = StyleBoxFlat.new()
-	style.bg_color = Color(0.2, 0.4, 0.2, 1)
-	style.border_color = Color(0.3, 0.6, 0.3, 1)
+	style.bg_color = Color(0.2, 0.2, 0.4, 1)
+	style.border_color = Color(0.4, 0.4, 0.7, 1)
 	style.corner_radius_top_left = 4
 	style.corner_radius_top_right = 4
 	style.corner_radius_bottom_right = 4
@@ -312,8 +312,13 @@ func _refresh_weapon_item(weapon_id: String) -> void:
 	style.border_width_bottom = 2
 
 	button.add_theme_stylebox_override("normal", style)
-	button.add_theme_stylebox_override("disabled", style)
-	button.add_theme_color_override("font_disabled_color", Color(0.5, 0.8, 0.5, 1))
+	var hover_style: StyleBoxFlat = style.duplicate()
+	hover_style.bg_color = style.bg_color.lightened(0.15)
+	hover_style.border_color = style.border_color.lightened(0.2)
+	button.add_theme_stylebox_override("hover", hover_style)
+	button.add_theme_stylebox_override("pressed", hover_style)
+	button.add_theme_color_override("font_color", Color(0.7, 0.8, 1, 1))
+	button.pressed.connect(_on_abilities_pressed.bind(weapon_id))
 
 
 func _refresh_affordability() -> void:
@@ -382,6 +387,11 @@ func _refresh_affordability() -> void:
 			button.add_theme_stylebox_override("hover", hover_style)
 			button.add_theme_stylebox_override("pressed", hover_style)
 			button.add_theme_color_override("font_color", Color(0.6, 0.85, 1, 1))
+
+
+func _on_abilities_pressed(weapon_id: String) -> void:
+	SaveData.selected_weapon = weapon_id
+	get_tree().change_scene_to_file("res://scenes/abilities_menu.tscn")
 
 
 func _on_back_pressed() -> void:

@@ -5,6 +5,10 @@ extends Node3D
 @export var stab_damage: int = 10
 @export var cooldown_multiplier: float = 2.4
 
+@onready var _swing_sound: AudioStreamPlayer3D = $SwingSound
+@onready var _charge_sound: AudioStreamPlayer3D = $ChargeSound
+@onready var _hit_sound: AudioStreamPlayer3D = $HitSound
+
 var targets_in_range: Array[Node3D] = []
 var targets_hit: Array[Node3D] = []
 var facing_direction: float = 1.0
@@ -82,6 +86,7 @@ func attack() -> void:
 	hitbox_active = true
 	attack_direction = facing_direction
 	targets_hit.clear()
+	_play(_swing_sound)
 
 	var tween: Tween = create_tween()
 
@@ -108,6 +113,7 @@ func _start_charge() -> void:
 	hitbox_active = true
 	attack_direction = facing_direction
 	charge_targets_hit.clear()
+	_play(_charge_sound)
 
 	# Extend spear forward
 	var tween: Tween = create_tween()
@@ -144,12 +150,19 @@ func _check_stab_hits() -> void:
 			if scoreboard and scoreboard.round_over:
 				return
 			targets_hit.append(target)
+			_play(_hit_sound)
+
+			var _mult = owner_node.get("rampage_multiplier") if owner_node else null
+			var multiplier: float = _mult if _mult != null else 1.0
+			var final_damage: int = int(stab_damage * multiplier)
 
 			var target_hp: Variant = target.get("current_hp")
-			if target_hp != null and target_hp <= stab_damage:
+			if target_hp != null and target_hp <= final_damage:
 				_add_kill()
 
-			target.take_damage(stab_damage)
+			target.take_damage(final_damage)
+			if owner_node and owner_node.has_method("on_hit_landed"):
+				owner_node.on_hit_landed()
 
 
 func _check_charge_hits() -> void:
@@ -172,14 +185,19 @@ func _check_charge_hits() -> void:
 			if scoreboard and scoreboard.round_over:
 				return
 			charge_targets_hit.append(target)
+			_play(_hit_sound)
 
-			var damage: int = _calculate_charge_damage(player_speed)
+			var _mult = owner_node.get("rampage_multiplier") if owner_node else null
+			var multiplier: float = _mult if _mult != null else 1.0
+			var damage: int = int(_calculate_charge_damage(player_speed) * multiplier)
 
 			var target_hp: Variant = target.get("current_hp")
 			if target_hp != null and target_hp <= damage:
 				_add_kill()
 
 			target.take_damage(damage)
+			if owner_node and owner_node.has_method("on_hit_landed"):
+				owner_node.on_hit_landed()
 
 			# Auto-retract on hit
 			_end_charge()
@@ -207,3 +225,8 @@ func _on_body_entered(body: Node3D) -> void:
 
 func _on_body_exited(body: Node3D) -> void:
 	targets_in_range.erase(body)
+
+
+func _play(snd: Node) -> void:
+	if snd and snd.get("stream") != null and snd.stream:
+		snd.play()

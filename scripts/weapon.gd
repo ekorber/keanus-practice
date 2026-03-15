@@ -9,6 +9,14 @@ extends Node3D
 ## Cooldown multiplier (1.0 = base knife speed)
 @export var cooldown_multiplier: float = 1.0
 
+@onready var _swing_sound: AudioStreamPlayer3D = $SwingSound
+@onready var _hit_sound: AudioStreamPlayer3D = $HitSound
+
+
+func _play(snd: Node) -> void:
+	if snd and snd.get("stream") != null and snd.stream:
+		snd.play()
+
 ## Reference to targets in the hitbox
 var targets_in_range: Array[Node3D] = []
 ## Targets already hit during current attack
@@ -90,13 +98,20 @@ func _check_hits() -> void:
 			if scoreboard and scoreboard.round_over:
 				return
 			targets_hit.append(target)
+			_play(_hit_sound)
+
+			var _mult = owner_node.get("rampage_multiplier") if owner_node else null
+			var multiplier: float = _mult if _mult != null else 1.0
+			var final_damage: int = int(weapon_damage * multiplier)
 
 			# Check if this hit will kill the target
 			var target_hp: Variant = target.get("current_hp")
-			if target_hp != null and target_hp <= weapon_damage:
+			if target_hp != null and target_hp <= final_damage:
 				_add_kill()  # Update score first so round result displays correctly
 
-			target.take_damage(weapon_damage)
+			target.take_damage(final_damage)
+			if owner_node and owner_node.has_method("on_hit_landed"):
+				owner_node.on_hit_landed()
 
 
 func _add_kill() -> void:
@@ -126,6 +141,7 @@ func attack() -> void:
 	hitbox_active = true
 	attack_direction = facing_direction
 	targets_hit.clear()
+	_play(_swing_sound)
 
 	# Play stab animation (times scaled by cooldown_multiplier)
 	var tween: Tween = create_tween()

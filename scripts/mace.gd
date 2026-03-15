@@ -4,6 +4,11 @@ extends Node3D
 @export var player_controlled: bool = true
 @export var damage_multiplier: float = 3.0
 
+@onready var _swing_sound: AudioStreamPlayer3D = $SwingSound
+@onready var _hit_sounds: Array[AudioStreamPlayer3D] = [
+	$HitSound1, $HitSound2, $HitSound3, $HitSound4, $HitSound5
+]
+
 var targets_in_range: Array[Node3D] = []
 var facing_direction: float = 1.0
 var attack_direction: float = 1.0
@@ -50,6 +55,11 @@ func set_facing(direction: float) -> void:
 		facing_direction = sign(direction)
 
 
+func attack() -> void:
+	if not is_attacking:
+		_try_strike()
+
+
 func _try_strike() -> void:
 	var owner_node: Node = get_parent()
 	if not owner_node:
@@ -57,6 +67,7 @@ func _try_strike() -> void:
 
 	is_attacking = true
 	attack_direction = facing_direction
+	_play(_swing_sound)
 
 	var vel_y: float = owner_node.velocity.y
 	var fall_speed: float = abs(vel_y)
@@ -71,6 +82,9 @@ func _try_strike() -> void:
 		var scoreboard: Node = get_tree().get_first_node_in_group("scoreboard")
 		if scoreboard and scoreboard.round_over:
 			return
+		var _mult = owner_node.get("rampage_multiplier") if owner_node else null
+		var rampage_mult: float = _mult if _mult != null else 1.0
+		var final_damage: int = int(damage * rampage_mult)
 		for target in targets_in_range:
 			if is_instance_valid(target) and target.has_method("take_damage"):
 				if owner_node.get("is_dead"):
@@ -78,9 +92,12 @@ func _try_strike() -> void:
 				if scoreboard and scoreboard.round_over:
 					break
 				var target_hp: Variant = target.get("current_hp")
-				if target_hp != null and target_hp <= damage:
+				if target_hp != null and target_hp <= final_damage:
 					_add_kill()
-				target.take_damage(damage)
+				_play_random_hit()
+				target.take_damage(final_damage)
+				if owner_node and owner_node.has_method("on_hit_landed"):
+					owner_node.on_hit_landed()
 				break  # Single hit per swing
 	)
 	tween.tween_interval(0.2)
@@ -110,3 +127,18 @@ func _on_body_entered(body: Node3D) -> void:
 
 func _on_body_exited(body: Node3D) -> void:
 	targets_in_range.erase(body)
+
+
+func _play(snd: Node) -> void:
+	if snd and snd.get("stream") != null and snd.stream:
+		snd.play()
+
+
+func _play_random_hit() -> void:
+	var valid: Array[AudioStreamPlayer3D] = []
+	for s in _hit_sounds:
+		if s and s.stream:
+			valid.append(s)
+	if valid.is_empty():
+		return
+	valid[randi() % valid.size()].play()

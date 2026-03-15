@@ -96,6 +96,33 @@ var strafe_cooldown: float = 0.0
 const MAX_STRAFE_TIME: float = 3.0
 const STRAFE_COOLDOWN_DURATION: float = 2.0
 
+# Spear charge
+var ai_spear_charging: bool = false
+
+# Dash
+const DASH_DISTANCE: float = 2.1
+const DASH_DURATION: float = 0.05
+const DASH_COOLDOWN: float = 3.0
+var is_dashing: bool = false
+var dash_timer: float = 0.0
+var dash_cooldown_timer: float = 0.0
+var dash_direction: float = 1.0
+
+# Rampage
+const RAMPAGE_DURATION: float = 3.0
+const RAMPAGE_HIT_REQUIREMENT: int = 10
+var rampage_multiplier: float = 1.0
+var rampage_active: bool = false
+var rampage_timer: float = 0.0
+var rampage_hit_count: int = 0
+
+# Parry
+const PARRY_DURATION: float = 1.0
+const PARRY_COOLDOWN: float = 2.0
+var parry_active: bool = false
+var parry_timer: float = 0.0
+var parry_cooldown_timer: float = 0.0
+
 # Platform jumping
 var target_platform_pos: Vector3 = Vector3.ZERO
 var jump_point: Vector3 = Vector3.ZERO
@@ -108,7 +135,17 @@ var consecutive_jump_failures: int = 0
 var unreachable_timer: float = 0.0
 const UNREACHABLE_THRESHOLD: float = 4.0  # After 4s of no vertical progress, consider player unreachable
 
+var _footstep_timer: float = 0.0
+const FOOTSTEP_INTERVAL: float = 0.42
+
 @onready var ray_up: RayCast3D = $RayUp
+@onready var _footstep_sound: AudioStreamPlayer3D = $FootstepSound
+@onready var _rampage_activate_sound: AudioStreamPlayer3D = $RampageActivateSound
+
+
+func _play(snd: Node) -> void:
+	if snd and snd.get("stream") != null and snd.stream:
+		snd.play()
 
 
 func _ready() -> void:
@@ -134,13 +171,11 @@ func _ready() -> void:
 func set_weapon(weapon_id: String) -> void:
 	selected_weapon_id = weapon_id
 
-	# Remove existing weapon if any
-	if knife:
-		knife.queue_free()
-		knife = null
+	# Remove existing weapon if any (knife and weapon alias the same node — free only once)
 	if weapon:
 		weapon.queue_free()
 		weapon = null
+		knife = null
 
 	# Load and instantiate the new weapon
 	var weapon_scene_path: String = _get_weapon_scene_path(weapon_id)
@@ -154,11 +189,26 @@ func set_weapon(weapon_id: String) -> void:
 	# Keep knife reference for compatibility
 	knife = weapon
 
+	# Sync hitbox visuals with current debug toggle state
+	if HitboxDebug.hitboxes_visible:
+		get_tree().call_group("hitbox_debug", "set_visible", true)
+
 
 func set_random_weapon() -> void:
-	var weapons: Array[String] = ["knife", "bat", "sword"]
-	var random_weapon: String = weapons[randi() % weapons.size()]
-	set_weapon(random_weapon)
+	var weapons: Array[String] = ["knife", "bat", "sword", "spear", "mace"]
+	set_weapon(weapons[randi() % weapons.size()])
+
+
+func set_weapon_to_match(player_weapon_id: String) -> void:
+	var weapon_id: String
+	match player_weapon_id:
+		"sword", "bat":
+			weapon_id = (["sword", "bat"] as Array)[randi() % 2]
+		"spear", "mace":
+			weapon_id = (["spear", "mace"] as Array)[randi() % 2]
+		_:
+			weapon_id = "knife"
+	set_weapon(weapon_id)
 
 
 func _get_weapon_scene_path(weapon_id: String) -> String:
@@ -167,6 +217,10 @@ func _get_weapon_scene_path(weapon_id: String) -> String:
 			return "res://scenes/bat.tscn"
 		"sword":
 			return "res://scenes/sword.tscn"
+		"spear":
+			return "res://scenes/spear.tscn"
+		"mace":
+			return "res://scenes/mace.tscn"
 		_:
 			return "res://scenes/knife.tscn"
 
@@ -179,7 +233,7 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * gravity_multiplier * delta
 
-	# Apply push velocity decay
+# Apply push velocity decay
 	push_velocity = move_toward(push_velocity, 0, delta * 8.0)
 
 	# Check if blocked above
@@ -193,6 +247,37 @@ func _physics_process(delta: float) -> void:
 	failed_jump_cooldown = max(0.0, failed_jump_cooldown - delta)
 	retreat_cooldown = max(0.0, retreat_cooldown - delta)
 	strafe_cooldown = max(0.0, strafe_cooldown - delta)
+	dash_cooldown_timer = max(0.0, dash_cooldown_timer - delta)
+
+	# Handle rampage duration
+	if rampage_active:
+		rampage_timer -= delta
+		if rampage_timer <= 0.0:
+			rampage_active = false
+			rampage_multiplier = 1.0
+			_clear_body_tint()
+
+	# Handle parry timers
+	if parry_active:
+		parry_timer -= delta
+		if parry_timer <= 0.0:
+			parry_active = false
+			parry_cooldown_timer = PARRY_COOLDOWN
+			_clear_body_tint()
+	elif parry_cooldown_timer > 0.0:
+		parry_cooldown_timer -= delta
+
+	# Handle dash — override movement entirely while dashing
+	if is_dashing:
+		dash_timer -= delta
+		velocity.x = dash_direction * (DASH_DISTANCE / DASH_DURATION)
+		velocity.z = 0
+		position.z = 0
+		if dash_timer <= 0.0:
+			is_dashing = false
+		move_and_slide()
+		_check_collisions()
+		return
 
 	# Track cumulative strafe time
 	if current_state == State.STRAFE:
@@ -213,6 +298,15 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	_check_collisions()
+
+	# Footstep sounds
+	if is_on_floor() and abs(move_direction) > 0:
+		_footstep_timer -= delta
+		if _footstep_timer <= 0:
+			_play(_footstep_sound)
+			_footstep_timer = FOOTSTEP_INTERVAL
+	else:
+		_footstep_timer = 0.0
 
 
 func _update_state_machine(delta: float) -> void:
@@ -420,6 +514,11 @@ func _change_state(new_state: State) -> void:
 	if new_state == current_state:
 		return
 
+	# Cancel spear charge when leaving attack state
+	if current_state == State.ATTACK and ai_spear_charging and knife:
+		knife._end_charge()
+		ai_spear_charging = false
+
 	previous_state = current_state
 	current_state = new_state
 	state_timer = 0.0
@@ -480,6 +579,11 @@ func _state_chase(delta: float) -> void:
 	if knife and direction != 0.0:
 		knife.set_facing(sign(direction))
 
+	# Dash toward player at medium range
+	if dash_cooldown_timer <= 0 and is_on_floor() and distance > 2.5 and distance < 6.0 and randf() < 0.012:
+		_start_dash(sign(direction))
+		return
+
 	if distance > stop_distance:
 		move_direction = sign(direction)
 		var current_speed: float = sprint_speed if distance > engage_distance * 0.5 else speed
@@ -500,6 +604,22 @@ func _state_attack(delta: float) -> void:
 	if knife and direction != 0.0:
 		knife.set_facing(sign(direction))
 
+	match selected_weapon_id:
+		"spear":
+			_attack_spear(direction, distance, total_distance)
+		"mace":
+			_attack_mace(direction, distance, total_distance)
+		_:
+			_attack_default(direction, distance, total_distance)
+
+
+func _attack_default(direction: float, distance: float, total_distance: float) -> void:
+	# Sword parry — occasionally deflect when player is close
+	if selected_weapon_id == "sword" and not parry_active and parry_cooldown_timer <= 0 and total_distance <= attack_distance * 1.5 and randf() < 0.008:
+		parry_active = true
+		parry_timer = PARRY_DURATION
+		_set_body_tint(Color(0.30, 0.30, 0.33, 1.0))
+
 	if total_distance <= attack_distance and knife and not knife.is_attacking and attack_cooldown <= 0:
 		knife.attack()
 		attack_cooldown = 0.3 + randf() * 0.2
@@ -516,11 +636,70 @@ func _state_attack(delta: float) -> void:
 		velocity.x = push_velocity
 
 
+func _attack_spear(direction: float, distance: float, total_distance: float) -> void:
+	if not knife:
+		return
+
+	if distance <= attack_distance:
+		# In range: release charge if charging, or normal stab
+		if ai_spear_charging:
+			knife._end_charge()
+			ai_spear_charging = false
+		elif not knife.is_attacking and attack_cooldown <= 0:
+			knife.attack()
+			attack_cooldown = 0.5 + randf() * 0.3
+			attacks_landed += 1
+	elif distance <= 5.0 and not ai_spear_charging and not knife.is_attacking and attack_cooldown <= 0:
+		# Medium range: start charge and rush in
+		knife._start_charge()
+		ai_spear_charging = true
+
+	if ai_spear_charging:
+		move_direction = sign(direction)
+		velocity.x = move_direction * sprint_speed + push_velocity
+	elif distance > attack_distance * 0.8:
+		move_direction = sign(direction)
+		velocity.x = move_direction * speed * 0.5 + push_velocity
+	elif distance < stop_distance * 0.5:
+		move_direction = -sign(direction)
+		velocity.x = move_direction * speed * 0.3 + push_velocity
+	else:
+		move_direction = 0.0
+		velocity.x = push_velocity
+
+
+func _attack_mace(direction: float, distance: float, total_distance: float) -> void:
+	if not knife:
+		return
+
+	# Jump when close and on the floor to set up a falling slam
+	if is_on_floor() and total_distance <= attack_distance * 2.0 and not knife.is_attacking:
+		velocity.y = jump_velocity
+
+	# Swing on the way down
+	if not is_on_floor() and velocity.y < -1.5 and not knife.is_attacking and attack_cooldown <= 0:
+		knife.attack()
+		attack_cooldown = 1.2
+		attacks_landed += 1
+
+	if distance > stop_distance:
+		move_direction = sign(direction)
+		velocity.x = move_direction * speed * 0.7 + push_velocity
+	else:
+		move_direction = 0.0
+		velocity.x = push_velocity
+
+
 func _state_retreat(delta: float) -> void:
 	var direction: float = player.global_position.x - global_position.x
 
 	if knife and direction != 0.0:
 		knife.set_facing(sign(direction))
+
+	# Dash away from player while retreating
+	if dash_cooldown_timer <= 0 and is_on_floor() and randf() < 0.02:
+		_start_dash(-sign(direction))
+		return
 
 	move_direction = -sign(direction)
 	velocity.x = move_direction * sprint_speed + push_velocity
@@ -803,6 +982,12 @@ func take_damage(amount: int) -> void:
 	if is_dead:
 		return
 
+	if parry_active:
+		parry_active = false
+		parry_cooldown_timer = PARRY_COOLDOWN
+		_clear_body_tint()
+		return
+
 	current_hp -= amount
 	if health_bar:
 		health_bar.set_hp(current_hp)
@@ -819,6 +1004,9 @@ func die() -> void:
 	visible = false
 	if knife:
 		knife.visible = false
+		for child in knife.get_children():
+			if child is Node3D and child.top_level:
+				child.visible = false
 	$CollisionShape3D.set_deferred("disabled", true)
 
 	var scoreboard: Node = get_tree().get_first_node_in_group("scoreboard")
@@ -861,6 +1049,20 @@ func reset_to_spawn() -> void:
 	strafe_accumulated = 0.0
 	strafe_cooldown = 0.0
 
+	# Reset spear, dash, rampage and parry
+	ai_spear_charging = false
+	is_dashing = false
+	dash_timer = 0.0
+	dash_cooldown_timer = 0.0
+	if rampage_active or parry_active:
+		_clear_body_tint()
+	rampage_active = false
+	rampage_timer = 0.0
+	rampage_multiplier = 1.0
+	parry_active = false
+	parry_timer = 0.0
+	parry_cooldown_timer = 0.0
+
 	if player:
 		last_distance_to_player = global_position.distance_to(player.global_position)
 
@@ -868,10 +1070,55 @@ func reset_to_spawn() -> void:
 	visible = true
 	if knife:
 		knife.visible = true
+		for child in knife.get_children():
+			if child is Node3D and child.top_level:
+				child.visible = true
 
 
 func unfreeze() -> void:
 	is_frozen = false
+
+
+func _set_body_tint(color: Color, with_emission: bool = false) -> void:
+	var mat: StandardMaterial3D = StandardMaterial3D.new()
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.albedo_color = Color(color.r, color.g, color.b, 0.45)
+	if with_emission:
+		mat.emission_enabled = true
+		mat.emission = color
+		mat.emission_energy_multiplier = 0.8
+	$HitboxVisual.material_override = mat
+	if HitboxDebug.hitboxes_visible:
+		$HitboxVisual.visible = true
+
+
+func _clear_body_tint() -> void:
+	$HitboxVisual.material_override = null
+	$HitboxVisual.visible = HitboxDebug.hitboxes_visible
+
+
+func _start_dash(direction: float) -> void:
+	is_dashing = true
+	dash_timer = DASH_DURATION
+	dash_cooldown_timer = DASH_COOLDOWN
+	dash_direction = direction
+
+
+func reset_rampage_charge() -> void:
+	rampage_hit_count = 0
+
+
+func on_hit_landed() -> void:
+	if rampage_active:
+		return
+	rampage_hit_count += 1
+	if rampage_hit_count >= RAMPAGE_HIT_REQUIREMENT:
+		rampage_active = true
+		rampage_timer = RAMPAGE_DURATION
+		rampage_multiplier = 1.5
+		rampage_hit_count = 0
+		_set_body_tint(Color(1.0, 0.40, 0.05, 1.0), true)
+		_play(_rampage_activate_sound)
 
 
 func _find_spawn_position() -> Vector3:

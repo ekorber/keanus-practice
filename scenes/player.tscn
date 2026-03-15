@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://c3xqk8m7np1at"]
+[gd_scene load_steps=8 format=3 uid="uid://c3xqk8m7np1at"]
 
 [ext_resource type="Script" uid="uid://csmr7gwejkie5" path="res://scripts/player.gd" id="1_script"]
+[ext_resource type="AudioStream" uid="uid://d2pqedglq2kx2" path="res://sounds/universfield-swoosh-06-351021.mp3" id="2_g2els"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
 
@@ -18,7 +19,6 @@ albedo_color = Color(1, 1, 1, 0.3)
 
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 5
-collision_mask = 1
 script = ExtResource("1_script")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
@@ -32,3 +32,14 @@ shape = SubResource("CapsuleShape3D_player")
 visible = false
 mesh = SubResource("BoxMesh_hitbox_visual")
 surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
+
+[node name="FootstepSound" type="AudioStreamPlayer3D" parent="."]
+
+[node name="DashSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_g2els")
+
+[node name="RampageActivateSound" type="AudioStreamPlayer" parent="."]
+
+[node name="ParryActivateSound" type="AudioStreamPlayer" parent="."]
+
+[node name="ParryDeflectSound" type="AudioStreamPlayer" parent="."]

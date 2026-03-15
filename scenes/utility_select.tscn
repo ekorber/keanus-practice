@@ -44,14 +44,14 @@ theme_override_constants/separation = 15
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 24
-text = "USE UTILITIES?"
+text = "USE BOOSTS?"
 horizontal_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Panel/VBoxContainer" unique_id=1747571631]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
 theme_override_font_sizes/font_size = 12
-text = "Click to select, then press Ready. Unselected utilities are saved."
+text = "Click to select, then press Ready. Unselected boosts are saved."
 horizontal_alignment = 1
 
 [node name="UtilitiesContainer" type="GridContainer" parent="Panel/VBoxContainer" unique_id=1272709854]

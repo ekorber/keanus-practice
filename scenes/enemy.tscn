@@ -34,3 +34,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
 
 [node name="RayUp" type="RayCast3D" parent="." unique_id=885700408]
 target_position = Vector3(0, 3, 0)
+
+[node name="FootstepSound" type="AudioStreamPlayer3D" parent="."]
+[node name="RampageActivateSound" type="AudioStreamPlayer3D" parent="."]

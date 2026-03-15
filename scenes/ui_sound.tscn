@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://ui_sound"]
+
+[node name="UISound" type="Node"]
+
+[node name="ButtonClick" type="AudioStreamPlayer" parent="."]
+[node name="MenuOpen" type="AudioStreamPlayer" parent="."]
+[node name="MenuClose" type="AudioStreamPlayer" parent="."]
+[node name="Purchase" type="AudioStreamPlayer" parent="."]
+[node name="AbilitySelect" type="AudioStreamPlayer" parent="."]

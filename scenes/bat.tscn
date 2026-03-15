@@ -75,3 +75,6 @@ shape = SubResource("BoxShape3D_hitbox")
 visible = false
 mesh = SubResource("BoxMesh_hitbox_visual")
 surface_material_override/0 = SubResource("StandardMaterial3D_hitbox_visual")
+
+[node name="SwingSound" type="AudioStreamPlayer3D" parent="."]
+[node name="HitSound" type="AudioStreamPlayer3D" parent="."]

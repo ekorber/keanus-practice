@@ -1,10 +1,32 @@
 extends Node
 
+var selected_weapon: String = ""
+var selected_abilities: Dictionary = {}  # weapon_id -> ability_id
+
 const SAVE_PATH: String = "user://save.cfg"
 const SECTION: String = "player"
 const KEY: String = "coins"
 const WEAPONS_KEY: String = "owned_weapons"
 const UTILITIES_KEY: String = "owned_utilities"
+const ABILITIES_KEY: String = "selected_abilities"
+
+
+func _ready() -> void:
+	selected_abilities = _load_selected_abilities()
+
+
+func _load_selected_abilities() -> Dictionary:
+	var config: ConfigFile = ConfigFile.new()
+	if config.load(SAVE_PATH) != OK:
+		return {}
+	return config.get_value(SECTION, ABILITIES_KEY, {})
+
+
+func save_selected_abilities() -> void:
+	var config: ConfigFile = ConfigFile.new()
+	config.load(SAVE_PATH)
+	config.set_value(SECTION, ABILITIES_KEY, selected_abilities)
+	config.save(SAVE_PATH)
 
 
 func save_coins(amount: int) -> void:
